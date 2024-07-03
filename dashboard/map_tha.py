@@ -10,6 +10,9 @@ with urlopen(
     counties = json.load(response)
 
 df = pd.read_csv("data/province.csv")
+dropdown_opt = []
+for i, j in zip(df.schools_province.tolist(), df.province_eng_name.tolist()):
+    dropdown_opt.append({"label": i, "value": j})
 
 app = Dash(__name__)
 
@@ -17,6 +20,12 @@ app.layout = html.Div(
     [
         html.H4("จำนวนการจบการศึกษาชั้นมัธยมศึกษาปีที่ 6"),
         html.P("เลือกข้อมูลที่ต้องการ"),
+        dcc.Dropdown(
+            options=dropdown_opt,
+            id="dropdown",
+            placeholder="เลือกจังหวัด",
+        ),
+        html.Div(id="pandas-output-container"),
         dcc.RadioItems(
             id="gender", options=["ชาย", "หญิง", "รวม"], value="รวม", inline=True
         ),
@@ -25,7 +34,15 @@ app.layout = html.Div(
 )
 
 
-@app.callback(Output("graph", "figure"), Input("gender", "value"))
+@app.callback(Output("pandas-output-container", "children"), Input("dropdown", "value"))
+def update_output(value):
+    return f"You have selected {value}"
+
+
+@app.callback(
+    Output("graph", "figure"),
+    Input("gender", "value"),
+)
 def display_choropleth(gender):
     look_up_t = ["ชาย", "หญิง", "รวม"]
     gender_id = look_up_t.index(gender)
