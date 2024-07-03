@@ -10,14 +10,18 @@ with urlopen(
 
 df = pd.read_csv("data/province.csv")
 
-fig = px.choropleth(
+fig = px.choropleth_mapbox(
     df,
     geojson=counties,
     featureidkey="properties.name",
     locations="province_eng_name",
-    scope="asia",
     color="totalstd",
     color_continuous_scale="Viridis",
+    hover_name="schools_province",
+    mapbox_style="carto-positron",
+    center={"lat": 13.342077, "lon": 100.5018},
+    zoom=4.9,
+    opacity=0.7,
 )
 fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
 fig.show()
